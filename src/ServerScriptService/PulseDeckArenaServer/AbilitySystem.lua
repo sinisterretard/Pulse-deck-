@@ -22,6 +22,26 @@ AbilitySystem.EnergyShields = {}
 AbilitySystem.ActiveHealingFields = {}
 AbilitySystem.ActiveMines = {}
 
+local function makeSphere(name, position, radius, color, lifetime)
+	local sphere = Instance.new("Part")
+	sphere.Name = name
+	sphere.Shape = Enum.PartType.Ball
+	sphere.Size = Vector3.new(radius * 2, radius * 2, radius * 2)
+	sphere.Position = position
+	sphere.Color = color
+	sphere.Material = Enum.Material.SmoothPlastic
+	sphere.Anchored = true
+	sphere.CanCollide = false
+	sphere.Transparency = 0.7
+	sphere.Parent = getEffectsFolder()
+	if lifetime then
+		task.delay(lifetime, function()
+			if sphere and sphere.Parent then sphere:Destroy() end
+		end)
+	end
+	return sphere
+end
+
 local function getEffectsFolder()
 	local world = workspace:FindFirstChild("PulseDeckArenaWorld")
 	if not world then return nil end
@@ -573,6 +593,8 @@ function AbilitySystem.UseAbility(hero, payload)
 		-- Impact handled in UpdateTimedAbilities when phoenixDiving flag is set
 
 	-- === STEALTH: CLOAK AND DAGGER ===
+end
+
 end
 
 function AbilitySystem.UseUltimate(hero)

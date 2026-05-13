@@ -7,6 +7,7 @@ local Config = require(sharedRoot:WaitForChild("Config"))
 local HeroConfig = require(sharedRoot:WaitForChild("HeroConfig"))
 local WeaponConfig = require(sharedRoot:WaitForChild("WeaponConfig"))
 local AbilityConfig = require(sharedRoot:WaitForChild("AbilityConfig"))
+local Util = require(sharedRoot:WaitForChild("Util"))
 
 local AISystem = {}
 

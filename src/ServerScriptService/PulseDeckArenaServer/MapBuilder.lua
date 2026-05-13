@@ -11,6 +11,9 @@ local Util = require(sharedRoot:WaitForChild("Util"))
 
 local MapBuilder = {}
 
+local HeroSystem = require(script.Parent:WaitForChild("HeroSystem"))
+local CombatSystem = require(script.Parent:WaitForChild("CombatSystem"))
+
 local function getRemotes()
 	local root = ReplicatedStorage:FindFirstChild("PulseDeckArena")
 	return root and root:FindFirstChild("Remotes")

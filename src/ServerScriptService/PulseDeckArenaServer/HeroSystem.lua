@@ -124,7 +124,7 @@ local function createRig(heroId, teamId, ownerId, guid, skinId)
 	-- Clothing overlays from skin
 	if skinDef then
 		-- Shirt / chest plate overlay
-		if equippedSkin.shirtColor then
+		if skinDef.shirtColor then
 			local shirtOverlay = Instance.new("Part")
 			shirtOverlay.Name = "ClothingShirt"
 			shirtOverlay.Size = Vector3.new(2.2, 2.4, 1.3)
@@ -138,7 +138,7 @@ local function createRig(heroId, teamId, ownerId, guid, skinId)
 		end
 
 		-- Pants overlay
-		if equippedSkin.pantsColor then
+		if skinDef.pantsColor then
 			local pantsOverlay = Instance.new("Part")
 			pantsOverlay.Name = "ClothingPants"
 			pantsOverlay.Size = Vector3.new(2.1, 2.2, 1.2)
@@ -416,6 +416,7 @@ function HeroSystem.GetControlledHeroByUserId(userId)
 end
 
 function HeroSystem.SpawnHeroesForOwner(ownerId, teamId, deck, ownerPlayer)
+	local MatchSystem = require(script.Parent:WaitForChild("MatchSystem"))
 	local list = {}
 	HeroSystem.HeroesByOwner[ownerId] = list
 
@@ -479,18 +480,18 @@ function HeroSystem.SpawnHeroesForOwner(ownerId, teamId, deck, ownerPlayer)
 			UltimateChargeMax = 100,
 			NextFireAt = 0,
 			LastSwitchAt = 0,
-InvulnerableUntil = 0,
-		MarkedUntil = 0,
-		MarkedByOwnerId = nil,
-		Sentry = nil,
-		Mines = {},
-		Stunned = false,
-		IsStealthed = false,
-		KillCount = 0,
-		DeathCount = 0,
-		AssistCount = 0,
-		DamageDealt = 0,
-		DamageTaken = 0,
+			InvulnerableUntil = 0,
+			MarkedUntil = 0,
+			MarkedByOwnerId = nil,
+			Sentry = nil,
+			Mines = {},
+			Stunned = false,
+			IsStealthed = false,
+			KillCount = 0,
+			DeathCount = 0,
+			AssistCount = 0,
+			DamageDealt = 0,
+			DamageTaken = 0,
 		-- Weapon skin tracking
 		WeaponSkin = heroDef.weaponSkin or "Default",
 		-- Selected skin

@@ -1,10 +1,14 @@
 --!strict
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
 
 local sharedRoot = ReplicatedStorage:WaitForChild("PulseDeckArena"):WaitForChild("Shared")
 local Config = require(sharedRoot:WaitForChild("Config"))
 local WeaponConfig = require(sharedRoot:WaitForChild("WeaponConfig"))
+local HeroConfig = require(sharedRoot:WaitForChild("HeroConfig"))
+local Util = require(sharedRoot:WaitForChild("Util"))
+local HeroSystem = require(script.Parent:WaitForChild("HeroSystem"))
 
 local CombatSystem = {}
 
@@ -176,11 +180,10 @@ function CombatSystem.DamageObjective(model, amount, teamId)
 		end
 		if gens == 2 then adjusted = adjusted * 0.4
 		elseif gens == 1 then adjusted = adjusted * 0.6
-		elseif gens == 0 then adjusted = adjusted * 1.5 -- Generator destroyed bonus
+		elseif gens == 0 then adjusted = adjusted * 1.5
 		end
 
-		local MatchSystem = require(script.Parent:WaitForChild("MatchSystem"))
-	MatchSystem.RecordCoreDamage(teamId, adjusted)
+		MatchSystem.RecordCoreDamage(teamId, adjusted)
 	end
 
 	obj.Health = math.max(0, obj.Health - adjusted)
@@ -1199,33 +1202,6 @@ function CombatSystem.CreatePickup(pickupType, position)
 	end)
 
 	return guid
-end
-
-function CombatSystem.GetObjectiveSnapshot()
-	local snapshot = {}
-	for model, obj in pairs(CombatSystem.Objectives) do
-		snapshot[model.Name] = {
-			objectiveType = obj.Name,
-			teamId = obj.TeamId,
-			health = obj.Health,
-			maxHealth = obj.MaxHealth,
-			alive = obj.Health > 0,
-			position = model.PrimaryPart and model.PrimaryPart.Position or Vector3.zero,
-		}
-	end
-	return snapshot
-end
-
-function CombatSystem.GetObjectiveFromPart(part)
-	if not part then return nil end
-	local current = part
-	while current and current ~= workspace do
-		if CombatSystem.Objectives[current] then
-			return current, CombatSystem.Objectives[current]
-		end
-		current = current.Parent
-	end
-	return nil
 end
 
 return CombatSystem

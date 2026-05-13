@@ -1,5 +1,7 @@
 --!strict
 
+print("PDA CLIENT: Main.client.lua is running!")
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundManager = require(ReplicatedStorage:WaitForChild("PulseDeckArena"):WaitForChild("Shared"):WaitForChild("SoundManager"))
 

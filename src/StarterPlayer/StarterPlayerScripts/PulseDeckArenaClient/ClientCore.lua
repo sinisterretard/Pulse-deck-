@@ -1,8 +1,6 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CameraClient = require(script.Parent:WaitForChild("CameraClient"))
-
 local ClientCore = {}
 
 ClientCore.Remotes = {}
@@ -101,14 +99,14 @@ function ClientCore.Init()
         ClientCore.Events.HeroStateChanged:Fire(payload)
 
         -- Auto-enter spectate when hero dies
-        if CameraClient and CameraClient.EnterSpectate then
-            local localUserId = game:GetService("Players").LocalPlayer.UserId
-            for _, h in pairs(payload.heroes or {}) do
-                if h.ownerUserId == localUserId and not h.alive and h.isControlled == false then
-                    CameraClient.EnterSpectate()
-                elseif h.ownerUserId == localUserId and h.alive and h.isControlled then
-                    CameraClient.ExitSpectate()
-                end
+        local localUserId = game:GetService("Players").LocalPlayer.UserId
+        for _, h in pairs(payload.heroes or {}) do
+            if h.ownerUserId == localUserId and not h.alive and h.isControlled == false then
+                local CameraClient = require(script.Parent:WaitForChild("CameraClient"))
+                CameraClient.EnterSpectate()
+            elseif h.ownerUserId == localUserId and h.alive and h.isControlled then
+                local CameraClient = require(script.Parent:WaitForChild("CameraClient"))
+                CameraClient.ExitSpectate()
             end
         end
     end)

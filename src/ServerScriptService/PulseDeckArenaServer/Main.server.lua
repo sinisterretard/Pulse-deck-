@@ -8,6 +8,8 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local sharedRoot = ReplicatedStorage:WaitForChild("PulseDeckArena"):WaitForChild("Shared")
 local Config = require(sharedRoot:WaitForChild("Config"))
 local HeroConfig = require(sharedRoot:WaitForChild("HeroConfig"))
+local WeaponConfig = require(sharedRoot:WaitForChild("WeaponConfig"))
+local Util = require(sharedRoot:WaitForChild("Util"))
 
 local MapBuilder = require(script.Parent:WaitForChild("MapBuilder"))
 local MatchSystem = require(script.Parent:WaitForChild("MatchSystem"))
@@ -856,16 +858,16 @@ task.spawn(function()
 				processCloakAndDagger(hero, os.clock())
 
 				-- EMP disabled
-processEMP(hero, os.clock())
+				processEMP(hero, os.clock())
 
-			-- Smoke screen
-			processSmokeScreen(hero, os.clock())
+				-- Smoke screen
+				processSmokeScreen(hero, os.clock())
 
-			-- Radar pulse
-			processRadarPulse(hero, os.clock())
+				-- Radar pulse
+				processRadarPulse(hero, os.clock())
 
-			-- Tactical overlay
-			processTacticalOverlay(hero, os.clock())
+				-- Tactical overlay
+				processTacticalOverlay(hero, os.clock())
 
 			-- Hero power effect processing
 			local heroDef = HeroConfig[hero.HeroId]
@@ -901,6 +903,7 @@ processEMP(hero, os.clock())
 			end
 		end
 	end
+end
 end)
 
 -- Update match state broadcasting and spawning

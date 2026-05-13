@@ -1,8 +1,9 @@
 --!strict
 
 local DataStoreService = game:GetService("DataStoreService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local sharedRoot = script.Parent.Parent:WaitForChild("Shared")
+local sharedRoot = ReplicatedStorage:WaitForChild("PulseDeckArena"):WaitForChild("Shared")
 local ProgressionUtils = require(sharedRoot:WaitForChild("ProgressionUtils"))
 local Config = require(sharedRoot:WaitForChild("Config"))
 local HeroConfig = require(sharedRoot:WaitForChild("HeroConfig"))
@@ -13,7 +14,13 @@ ProgressionSystem.Profiles = {}
 ProgressionSystem.DataStoreAvailable = true
 ProgressionSystem.WarnedFallback = false
 
-local store = DataStoreService:GetDataStore("PulseDeckArenaProfiles_v2")
+local storeOk, store = pcall(function()
+	return DataStoreService:GetDataStore("PulseDeckArenaProfiles_v2")
+end)
+if not storeOk then
+	store = nil
+	ProgressionSystem.DataStoreAvailable = false
+end
 
 local function defaultProfile()
 	return {

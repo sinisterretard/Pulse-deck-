@@ -1801,34 +1801,39 @@ function UIClient.Init()
 	UIClient.Gui = gui
 
 	-- Create screen layers
-	UIClient.MainMenu = Instance.new("ScreenGui")
+	UIClient.MainMenu = Instance.new("Frame")
 	UIClient.MainMenu.Name = "MainMenu"
-	UIClient.MainMenu.ResetOnSpawn = false
-	UIClient.MainMenu.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	UIClient.MainMenu.Size = UDim2.fromScale(1, 1)
+	UIClient.MainMenu.BackgroundTransparency = 1
+	UIClient.MainMenu.Visible = false
 	UIClient.MainMenu.Parent = gui
 
-	UIClient.DeckSelect = Instance.new("ScreenGui")
+	UIClient.DeckSelect = Instance.new("Frame")
 	UIClient.DeckSelect.Name = "DeckSelect"
-	UIClient.DeckSelect.ResetOnSpawn = false
-	UIClient.DeckSelect.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	UIClient.DeckSelect.Size = UDim2.fromScale(1, 1)
+	UIClient.DeckSelect.BackgroundTransparency = 1
+	UIClient.DeckSelect.Visible = false
 	UIClient.DeckSelect.Parent = gui
 
-	UIClient.HUD = Instance.new("ScreenGui")
+	UIClient.HUD = Instance.new("Frame")
 	UIClient.HUD.Name = "HUD"
-	UIClient.HUD.ResetOnSpawn = false
-	UIClient.HUD.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	UIClient.HUD.Size = UDim2.fromScale(1, 1)
+	UIClient.HUD.BackgroundTransparency = 1
+	UIClient.HUD.Visible = false
 	UIClient.HUD.Parent = gui
 
-	UIClient.Scoreboard = Instance.new("ScreenGui")
+	UIClient.Scoreboard = Instance.new("Frame")
 	UIClient.Scoreboard.Name = "Scoreboard"
-	UIClient.Scoreboard.ResetOnSpawn = false
-	UIClient.Scoreboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	UIClient.Scoreboard.Size = UDim2.fromScale(1, 1)
+	UIClient.Scoreboard.BackgroundTransparency = 1
+	UIClient.Scoreboard.Visible = false
 	UIClient.Scoreboard.Parent = gui
 
-	UIClient.PostMatch = Instance.new("ScreenGui")
+	UIClient.PostMatch = Instance.new("Frame")
 	UIClient.PostMatch.Name = "PostMatch"
-	UIClient.PostMatch.ResetOnSpawn = false
-	UIClient.PostMatch.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	UIClient.PostMatch.Size = UDim2.fromScale(1, 1)
+	UIClient.PostMatch.BackgroundTransparency = 1
+	UIClient.PostMatch.Visible = false
 	UIClient.PostMatch.Parent = gui
 
 	-- Build all screens
