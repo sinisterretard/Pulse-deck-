@@ -8,6 +8,7 @@ local Players = game:GetService("Players")
 local ClientCore = require(script.Parent:WaitForChild("ClientCore"))
 local UIClient = require(script.Parent:WaitForChild("UIClient"))
 local CameraClient = require(script.Parent:WaitForChild("CameraClient"))
+local SettingsClient = require(script.Parent:WaitForChild("SettingsClient"))
 
 local InputClient = {}
 
@@ -123,25 +124,21 @@ function InputClient.Init()
 		if gameProcessed then return end
 		if isChatFocused() then return end
 
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		local function isAction(name)
+			return SettingsClient.Bindings[name] == input.KeyCode or SettingsClient.Bindings[name] == input.UserInputType
+		end
+
+		if isAction("Fire") then
 			firing = true
 			sendFire()
-		elseif input.KeyCode == Enum.KeyCode.R then
+		elseif isAction("Reload") then
 			ClientCore.Fire("RequestReload", {})
-		elseif input.KeyCode == Enum.KeyCode.Q then
+		elseif isAction("Ability") then
 			local camera = workspace.CurrentCamera
 			ClientCore.Fire("RequestAbility", {
 				direction = camera and camera.CFrame.LookVector or Vector3.new(0, 0, -1),
 			})
-		elseif input.KeyCode == Enum.KeyCode.B then
-			if UIClient.ShopFrame then
-				UIClient.ShopFrame.Visible = not UIClient.ShopFrame.Visible
-			end
-			-- Also buy menu for bomb mode
-			if ClientCore.State.gameMode == "Bomb" and not UIClient.ShopFrame.Visible then
-				ClientCore.Fire("RequestBuyMenu", {})
-			end
-		elseif input.KeyCode == Enum.KeyCode.E then
+		elseif isAction("Ultimate") then
 			local hero = ClientCore.State.heroes and ClientCore.State.heroes[1]
 			if ClientCore.State.gameMode == "Bomb" then
 				ClientCore.Fire("RequestPlant", {sitePosition = (workspace.CurrentCamera and workspace.CurrentCamera.CFrame.Position) or Vector3.new(0, 0, 0)})
@@ -152,46 +149,52 @@ function InputClient.Init()
 					ClientCore.Fire("RequestUltimate", {})
 				end
 			end
-		elseif input.KeyCode == Enum.KeyCode.U then
-			ClientCore.Fire("RequestReady", {})
-		elseif input.KeyCode == Enum.KeyCode.F then
+		elseif isAction("Power") then
 			ClientCore.Fire("RequestPower", { powerId = "speedBoost" })
-		elseif input.KeyCode == Enum.KeyCode.One then
+		elseif isAction("Switch1") then
 			ClientCore.Fire("RequestSwitchHero", { slot = 1 })
-		elseif input.KeyCode == Enum.KeyCode.Two then
+		elseif isAction("Switch2") then
 			ClientCore.Fire("RequestSwitchHero", { slot = 2 })
-		elseif input.KeyCode == Enum.KeyCode.Three then
+		elseif isAction("Switch3") then
 			ClientCore.Fire("RequestSwitchHero", { slot = 3 })
-		elseif input.KeyCode == Enum.KeyCode.Four then
+		elseif isAction("Switch4") then
 			ClientCore.Fire("RequestSwitchHero", { slot = 4 })
-		elseif input.KeyCode == Enum.KeyCode.Five then
+		elseif isAction("Switch5") then
 			ClientCore.Fire("RequestSwitchHero", { slot = 5 })
-		elseif input.KeyCode == Enum.KeyCode.V then
+		elseif isAction("Camera") then
 			CameraClient.ToggleMode()
-		elseif input.KeyCode == Enum.KeyCode.T then
-			if UIClient.EmoteFrame then
-				UIClient.EmoteFrame.Visible = not UIClient.EmoteFrame.Visible
+		elseif isAction("Scoreboard") then
+			ClientCore.Fire("RequestScoreboard", {})
+		elseif isAction("Pause") then
+			if UIClient.ShowPauseMenu then
+				UIClient:ShowPauseMenu()
 			end
-		elseif input.KeyCode == Enum.KeyCode.M then
-			if UIClient.PracticeFrame then
-				UIClient.PracticeFrame.Visible = not UIClient.PracticeFrame.Visible
-			end
-		elseif input.KeyCode == Enum.KeyCode.G then
+		elseif isAction("Ready") then
+			ClientCore.Fire("RequestReady", {})
+		elseif isAction("SpectateNext") then
 			CameraClient.FindNextSpectateTarget()
-		elseif input.KeyCode == Enum.KeyCode.H then
+		elseif isAction("SpectateMode") then
 			CameraClient.ToggleSpectateMode()
-		elseif input.KeyCode == Enum.KeyCode.Y then
+		elseif isAction("SpectateToggle") then
 			if CameraClient.Spectating then
 				CameraClient.ExitSpectate()
 			else
 				CameraClient.EnterSpectate()
 			end
-		elseif input.KeyCode == Enum.KeyCode.Tab then
-			ClientCore.Fire("RequestScoreboard", {})
-		elseif input.KeyCode == Enum.KeyCode.P then
-			-- Pause menu (basic)
-			if UIClient.ShowPauseMenu then
-				UIClient:ShowPauseMenu()
+		elseif isAction("Emote") then
+			if UIClient.EmoteFrame then
+				UIClient.EmoteFrame.Visible = not UIClient.EmoteFrame.Visible
+			end
+		elseif isAction("Practice") then
+			if UIClient.PracticeFrame then
+				UIClient.PracticeFrame.Visible = not UIClient.PracticeFrame.Visible
+			end
+		elseif isAction("Shop") then
+			if UIClient.ShopFrame then
+				UIClient.ShopFrame.Visible = not UIClient.ShopFrame.Visible
+			end
+			if ClientCore.State.gameMode == "Bomb" and not (UIClient.ShopFrame and UIClient.ShopFrame.Visible) then
+				ClientCore.Fire("RequestBuyMenu", {})
 			end
 		end
 	end)

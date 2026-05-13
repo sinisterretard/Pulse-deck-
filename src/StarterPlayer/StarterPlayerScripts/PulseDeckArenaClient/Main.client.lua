@@ -10,9 +10,11 @@ local InputClient = require(script.Parent:WaitForChild("InputClient"))
 local CombatClient = require(script.Parent:WaitForChild("CombatClient"))
 local EffectsClient = require(script.Parent:WaitForChild("EffectsClient"))
 local AnimationClient = require(script.Parent:WaitForChild("AnimationClient"))
+local SettingsClient = require(script.Parent:WaitForChild("SettingsClient"))
 
 -- Initialize in correct dependency order:
 ClientCore.Init()
+SettingsClient.Init()
 UIClient.Init()
 CameraClient.Init()
 InputClient.Init()

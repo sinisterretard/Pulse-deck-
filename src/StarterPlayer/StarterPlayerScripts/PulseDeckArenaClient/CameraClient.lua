@@ -169,55 +169,6 @@ function CameraClient.Init()
 			end
 		end
 	end)
-
-	-- Post-processing effects
-	local lighting = Lighting
-	lighting.Ambient = Color3.fromRGB(55, 60, 80)
-	lighting.OutdoorAmbient = Color3.fromRGB(30, 35, 50)
-	lighting.Brightness = 2
-	lighting.ClockTime = 20
-	lighting.EnvironmentDiffuseScale = 0.4
-	lighting.EnvironmentSpecularScale = 0.6
-	lighting.FogColor = Color3.fromRGB(15, 18, 25)
-	lighting.FogEnd = 400
-
-	-- Bloom for neon aesthetic
-	local bloom = Instance.new("BloomEffect")
-	bloom.Intensity = 0.3
-	bloom.Size = 24
-	bloom.Threshold = 1.2
-	bloom.Parent = lighting
-
-	-- Color correction
-	local cc = Instance.new("ColorCorrectionEffect")
-	cc.Brightness = 0.02
-	cc.Contrast = 0.08
-	cc.Saturation = 0.1
-	cc.Parent = lighting
-
-	-- SunRays
-	local sunRays = Instance.new("SunRaysEffect")
-	sunRays.Intensity = 0
-	sunRays.Spread = 0.5
-	sunRays.Parent = lighting
-
-	-- Depth of field for cinematic feel
-	local dof = Instance.new("DepthOfFieldEffect")
-	dof.FarIntensity = 0.3
-	dof.FocusDistance = 20
-	dof.InFocusRadius = 16
-	dof.NearIntensity = 0
-	dof.Parent = lighting
-
-	-- Atmopshere for fog glow
-	local atmo = Instance.new("Atmosphere")
-	atmo.Density = 0.15
-	atmo.Offset = 0.5
-	atmo.Color = Color3.fromRGB(40, 45, 60)
-	atmo.Decay = Color3.fromRGB(20, 22, 30)
-	atmo.Glare = 0.1
-	atmo.Haze = 0.5
-	atmo.Parent = lighting
 end
 
 return CameraClient

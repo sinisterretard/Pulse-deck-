@@ -184,6 +184,15 @@ function UIClient.BuildMainMenu()
 		ClientCore.Fire("RequestJoinQueue", {})
 	end)
 
+	-- Settings button
+	local settingsBtn = createTextButton(screen, "⚙ SETTINGS",
+		UDim2.new(0, 160, 0, 44), UDim2.new(0.5, -80, 0.75, 0),
+		Color3.fromRGB(60, 60, 80), Color3.fromRGB(80, 80, 110))
+	settingsBtn.TextSize = 14
+	settingsBtn.MouseButton1Click:Connect(function()
+		UIClient.ShowSettings()
+	end)
+
 	-- Ready button
 	local readyBtn = createTextButton(screen, "✅ READY UP",
 		UDim2.new(0, 200, 0, 50), UDim2.new(0.5, -100, 0.65, 0),
@@ -1069,6 +1078,264 @@ function UIClient.ShowMatchResult(winnerText, duration)
 		Color3.fromRGB(120, 130, 150), Enum.Font.Gotham)
 
 	task.spawn(animateScreenIn, screen, 0.3)
+end
+
+-----------------------------------------------------
+-- SETTINGS
+-----------------------------------------------------
+
+function UIClient.ShowSettings()
+	if UIClient.SettingsFrame then
+		UIClient.SettingsFrame.Visible = not UIClient.SettingsFrame.Visible
+		return
+	end
+
+	local screen = UIClient.Gui
+	local bg = createRoundedFrame(screen, "SettingsFrame",
+		UDim2.new(0, 500, 0, 550), UDim2.new(0.5, -250, 0.5, -275),
+		Color3.fromRGB(10, 12, 20, 240), 0.3, 12)
+	bg.ZIndex = 60
+
+	createTextLabel(bg, "SETTINGS",
+		UDim2.new(1, 0, 0, 40), UDim2.new(0, 0, 0, 5), 24,
+		Color3.fromRGB(255, 222, 35), Enum.Font.GothamBlack)
+
+	-- Tabs
+	local activeTab = "Graphics"
+	local tabY = 50
+	local tabsFrame = createRoundedFrame(bg, "Tabs",
+		UDim2.new(0.9, 0, 0, 36), UDim2.new(0.05, 0, 0, 50),
+		Color3.fromRGB(20, 22, 35), 0.5, 8)
+
+	local tabs = {"Graphics", "Controls", "Audio"}
+	local tabButtons = {}
+	for i, tabName in ipairs(tabs) do
+		local btn = createTextButton(tabsFrame, tabName,
+			UDim2.new(0.3, -4, 0, 28), UDim2.new((i-1)/3 + 0.02, 0, 0.5, -14),
+			Color3.fromRGB(40, 44, 60))
+		btn.TextSize = 13
+		btn.ZIndex = 61
+		btn.MouseButton1Click:Connect(function()
+			activeTab = tabName
+			for _, b in ipairs(tabButtons) do
+				b.BackgroundColor3 = Color3.fromRGB(40, 44, 60)
+			end
+			btn.BackgroundColor3 = Color3.fromRGB(60, 120, 200)
+			UIClient.UpdateSettingsTab(bg, tabName)
+		end)
+		table.insert(tabButtons, btn)
+	end
+	tabButtons[1].BackgroundColor3 = Color3.fromRGB(60, 120, 200)
+
+	-- Content area
+	local contentFrame = createRoundedFrame(bg, "Content",
+		UDim2.new(0.9, 0, 0.65, 0), UDim2.new(0.05, 0, 0.22, 0),
+		Color3.fromRGB(15, 17, 28), 0.5, 8)
+	contentFrame.ZIndex = 60
+
+	bg:SetAttribute("ContentFrame", contentFrame)
+
+	-- Close button
+	local closeBtn = createTextButton(bg, "✕",
+		UDim2.new(0, 36, 0, 36), UDim2.new(1, -46, 0, 5),
+		Color3.fromRGB(180, 50, 50))
+	closeBtn.TextSize = 18
+	closeBtn.ZIndex = 61
+	closeBtn.MouseButton1Click:Connect(function()
+		bg.Visible = false
+	end)
+
+	UIClient.SettingsFrame = bg
+	UIClient.UpdateSettingsTab(bg, "Graphics")
+end
+
+function UIClient.UpdateSettingsTab(bg, tab)
+	local content = bg and bg:FindFirstChild("Content")
+	if not content then return end
+	content:ClearAllChildren()
+
+	local SettingsClient = require(script.Parent:WaitForChild("SettingsClient"))
+	local y = 8
+
+	if tab == "Graphics" then
+		createTextLabel(content, "Graphics Quality",
+			UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(180, 190, 210))
+		y += 26
+
+		local presets = {"Low", "Medium", "High", "Ultra"}
+		for i, preset in ipairs(presets) do
+			local isActive = SettingsClient.GetCurrentPreset() == preset
+			local btn = createTextButton(content, preset,
+				UDim2.new(0.2, -4, 0, 28), UDim2.new(0.05 + (i-1) * 0.22, 0, 0, y),
+				isActive and Color3.fromRGB(60, 120, 200) or Color3.fromRGB(40, 44, 60))
+			btn.TextSize = 12
+			btn.ZIndex = 61
+			btn.MouseButton1Click:Connect(function()
+				SettingsClient.ApplyGraphicsPreset(preset)
+				UIClient.UpdateSettingsTab(bg, "Graphics")
+			end)
+		end
+		y += 36
+
+		createTextLabel(content, "FPS Cap: " .. tostring(SettingsClient.GetFPSCap()),
+			UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(180, 190, 210))
+		y += 22
+
+		local fpsOptions = {30, 60, 120, 144, 240}
+		for i, fps in ipairs(fpsOptions) do
+			local isActive = SettingsClient.GetFPSCap() == fps
+			local btn = createTextButton(content, tostring(fps),
+				UDim2.new(0.15, -4, 0, 28), UDim2.new(0.05 + (i-1) * 0.17, 0, 0, y),
+				isActive and Color3.fromRGB(60, 120, 200) or Color3.fromRGB(40, 44, 60))
+			btn.TextSize = 12
+			btn.ZIndex = 61
+			btn.MouseButton1Click:Connect(function()
+				SettingsClient.SetFPSCap(fps)
+				UIClient.UpdateSettingsTab(bg, "Graphics")
+			end)
+		end
+		y += 36
+
+		-- Camera shake toggle
+		local shakeBtn = createTextButton(content, "Camera Shake: " .. (SettingsClient.CameraShake and "ON" or "OFF"),
+			UDim2.new(0.4, 0, 0, 28), UDim2.new(0.05, 0, 0, y),
+			SettingsClient.CameraShake and Color3.fromRGB(60, 160, 80) or Color3.fromRGB(120, 60, 60))
+		shakeBtn.TextSize = 12
+		shakeBtn.ZIndex = 61
+		shakeBtn.MouseButton1Click:Connect(function()
+			SettingsClient.CameraShake = not SettingsClient.CameraShake
+			UIClient.UpdateSettingsTab(bg, "Graphics")
+		end)
+		y += 36
+
+		-- Show damage numbers toggle
+		local dmgBtn = createTextButton(content, "Damage Numbers: " .. (SettingsClient.ShowDamageNumbers and "ON" or "OFF"),
+			UDim2.new(0.4, 0, 0, 28), UDim2.new(0.05, 0, 0, y),
+			SettingsClient.ShowDamageNumbers and Color3.fromRGB(60, 160, 80) or Color3.fromRGB(120, 60, 60))
+		dmgBtn.TextSize = 12
+		dmgBtn.ZIndex = 61
+		dmgBtn.MouseButton1Click:Connect(function()
+			SettingsClient.ShowDamageNumbers = not SettingsClient.ShowDamageNumbers
+			SettingsClient.Save()
+			UIClient.UpdateSettingsTab(bg, "Graphics")
+		end)
+		y += 36
+
+		-- Show killfeed toggle
+		local kfBtn = createTextButton(content, "Killfeed: " .. (SettingsClient.ShowKillfeed and "ON" or "OFF"),
+			UDim2.new(0.4, 0, 0, 28), UDim2.new(0.05, 0, 0, y),
+			SettingsClient.ShowKillfeed and Color3.fromRGB(60, 160, 80) or Color3.fromRGB(120, 60, 60))
+		kfBtn.TextSize = 12
+		kfBtn.ZIndex = 61
+		kfBtn.MouseButton1Click:Connect(function()
+			SettingsClient.ShowKillfeed = not SettingsClient.ShowKillfeed
+			SettingsClient.Save()
+			UIClient.UpdateSettingsTab(bg, "Graphics")
+		end)
+
+	elseif tab == "Controls" then
+		createTextLabel(content, "Click a binding to change it",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 12,
+			Color3.fromRGB(150, 160, 180))
+		y += 22
+
+		local actionNames = SettingsClient.GetControlNames()
+		local listeningFor = nil
+		local listeningLabel = nil
+
+		for action, displayName in pairs(actionNames) do
+			local keyStr = SettingsClient.GetBindingDisplay(action)
+			local row = createRoundedFrame(content, "BindingRow",
+				UDim2.new(0.9, 0, 0, 28), UDim2.new(0.05, 0, 0, y),
+				Color3.fromRGB(20, 22, 35), 0.5, 6)
+			row.ZIndex = 61
+			createTextLabel(row, displayName,
+				UDim2.new(0.5, 0, 1, 0), UDim2.new(0, 8, 0, 0), 12,
+				Color3.fromRGB(200, 210, 230))
+			local keyLabel = createTextLabel(row, "[" .. keyStr .. "]",
+				UDim2.new(0.3, 0, 1, 0), UDim2.new(0.6, 0, 0, 0), 12,
+				Color3.fromRGB(255, 200, 50), Enum.Font.GothamBold)
+			keyLabel.ZIndex = 62
+
+			local btn = Instance.new("TextButton")
+			btn.Size = UDim2.fromScale(1, 1)
+			btn.BackgroundTransparency = 1
+			btn.Text = ""
+			btn.ZIndex = 62
+			btn.Parent = row
+			btn.MouseButton1Click:Connect(function()
+				listeningFor = action
+				keyLabel.Text = "[...]"
+				local conn
+				conn = game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+					if gpe then return end
+					if input.KeyCode == Enum.KeyCode.Escape then
+						keyLabel.Text = "[" .. SettingsClient.GetBindingDisplay(action) .. "]"
+						listeningFor = nil
+						conn:Disconnect()
+						return
+					end
+					SettingsClient.SetBinding(action, input)
+					keyLabel.Text = "[" .. SettingsClient.GetBindingDisplay(action) .. "]"
+					listeningFor = nil
+					conn:Disconnect()
+				end)
+			end)
+			y += 32
+		end
+
+		-- Reset bindings button
+		local resetBtn = createTextButton(content, "Reset to Defaults",
+			UDim2.new(0.4, 0, 0, 32), UDim2.new(0.3, 0, 0, y + 4),
+			Color3.fromRGB(180, 80, 60))
+		resetBtn.TextSize = 13
+		resetBtn.ZIndex = 61
+		resetBtn.MouseButton1Click:Connect(function()
+			SettingsClient.ResetBindings()
+			UIClient.UpdateSettingsTab(bg, "Controls")
+		end)
+
+	elseif tab == "Audio" then
+		createTextLabel(content, "Master Volume",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(180, 190, 210))
+		y += 22
+		local mvLabel = createTextLabel(content, math.floor(SettingsClient.MasterVolume * 100) .. "%",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(255, 200, 50))
+		y += 22
+		local mvSlider = Instance.new("Frame")
+		mvSlider.Size = UDim2.new(0.8, 0, 0, 6)
+		mvSlider.Position = UDim2.new(0.1, 0, 0, y)
+		mvSlider.BackgroundColor3 = Color3.fromRGB(40, 44, 60)
+		mvSlider.BorderSizePixel = 0
+		mvSlider.Parent = content
+		local mvFill = Instance.new("Frame")
+		mvFill.Size = UDim2.new(SettingsClient.MasterVolume, 0, 1, 0)
+		mvFill.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+		mvFill.BorderSizePixel = 0
+		mvFill.Parent = mvSlider
+		y += 20
+
+		createTextLabel(content, "SFX Volume",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(180, 190, 210))
+		y += 22
+		createTextLabel(content, math.floor(SettingsClient.SFXVolume * 100) .. "%",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(255, 200, 50))
+		y += 22
+
+		createTextLabel(content, "Music Volume",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(180, 190, 210))
+		y += 22
+		createTextLabel(content, math.floor(SettingsClient.MusicVolume * 100) .. "%",
+			UDim2.new(0.9, 0, 0, 20), UDim2.new(0.05, 0, 0, y), 14,
+			Color3.fromRGB(255, 200, 50))
+	end
 end
 
 -----------------------------------------------------
